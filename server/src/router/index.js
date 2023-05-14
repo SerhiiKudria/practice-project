@@ -77,12 +77,7 @@ router.post(
 //   contestController.getContestById
 // );
 
-router.post(
-  '/updateContest',
-  checkToken.checkToken,
-  upload.updateContestFile,
-  contestController.updateContest
-);
+
 
 router.get(
   '/downloadFile/:fileName',
