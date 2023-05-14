@@ -7,10 +7,11 @@ const checkToken = require('../middlewares/checkToken');
 const validators = require('../middlewares/validators');
 const chatController = require('../controllers/chatController');
 const upload = require('../utils/fileUpload');
+const contestsRouter = require('./contestRouter');
 const router = express.Router();
 
 // post('', body)
-// get('.../parems&query')
+// get('.../params&query')
 // patch/put('.../params', body)
 // delete('.../params')
 
@@ -38,35 +39,43 @@ router.post(
 
 // contests
 
-router.post(
-  '/pay',
-  checkToken.checkToken,
-  basicMiddlewares.onlyForCustomer,
-  upload.uploadContestFiles,
-  basicMiddlewares.parseBody,
-  validators.validateContestCreation,
-  userController.payment
-);
+router.use('/contests', contestsRouter);
 
+// POST /contests
+// router.post(
+//   '/pay',
+//   checkToken.checkToken,
+//   basicMiddlewares.onlyForCustomer,
+//   upload.uploadContestFiles,
+//   basicMiddlewares.parseBody,
+//   validators.validateContestCreation,
+//   userController.payment
+// );
+
+// GET /contests/types&characteristic1=...&characteristic2=...
 router.post(
   '/dataForContest',
   checkToken.checkToken,
   contestController.dataForContest
 );
 
-router.post(
-  '/getCustomersContests',
-  checkToken.checkToken,
-  contestController.getCustomersContests
-);
+// GET //user/id/contests
+// GET //contests/byCustomer
+// router.post(
+//   '/getCustomersContests',
+//   checkToken.checkToken,
+//   contestController.getCustomersContests
+// );
 
-router.get(
-  '/getContestById',
-  checkToken.checkToken,
-  basicMiddlewares.canGetContest,
-  contestController.getContestById
-);
+// GET /contests/:contestId
+// router.get(
+//   '/getContestById',
+//   checkToken.checkToken,
+//   basicMiddlewares.canGetContest,
+//   contestController.getContestById
+// );
 
+// GET /contests...
 router.post(
   '/getAllContests',
   checkToken.checkToken,
