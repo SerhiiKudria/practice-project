@@ -252,7 +252,7 @@ module.exports.setOfferStatus = async (req, res, next) => {
 };
 
 module.exports.getCustomersContests = (req, res, next) => {
-  console.log('req.query :>> ', req.query);
+
   db.Contests.findAll({
     where: { status: req.query.contestStatus, userId: req.tokenData.userId },
     limit: req.query.limit,
@@ -279,23 +279,45 @@ module.exports.getCustomersContests = (req, res, next) => {
     .catch(err => next(new ServerError(err)));
 };
 
-module.exports.getContests = (req, res, next) => {
+module.exports.getAllOffers = async (req, res, next) => {
+  const {
+    query: { limit = 10, offset = 0 },
+  } = req;
+
+  try {
+    const foundOffers = await db.Offers.findAll(
+      { limit, offset },
+      { raw: true }
+    );
+
+    res.status(200).send(foundOffers);
+  } catch (err) {
+    next(new ServerError());
+  }
+};
+
+module.exports.getContests = async (req, res, next) => {
+
+  const {
+    query: { limit = 10, offset = 0, ownEntries = '', awardSort = '', contestId = '',  industry = '', typeIndex = ''},
+  } = req;
+
   const predicates = UtilFunctions.createWhereForAllContests(
-    req.body.typeIndex,
-    req.body.contestId,
-    req.body.industry,
-    req.body.awardSort
+    typeIndex,
+    contestId,
+    industry,
+    awardSort
   );
-  db.Contests.findAll({
+  await db.Contests.findAll({
     where: predicates.where,
     order: predicates.order,
-    limit: req.body.limit,
-    offset: req.body.offset ? req.body.offset : 0,
+    limit: limit,
+    offset: offset ? offset : 0,
     include: [
       {
         model: db.Offers,
-        required: req.body.ownEntries,
-        where: req.body.ownEntries ? { userId: req.tokenData.userId } : {},
+        required: ownEntries,
+        where: ownEntries ? { userId: req.tokenData.userId } : {},
         attributes: ['id'],
       },
     ],
@@ -313,22 +335,4 @@ module.exports.getContests = (req, res, next) => {
     .catch(err => {
       next(new ServerError());
     });
-};
-
-
-module.exports.getAllOffers = async (req, res, next) => {
-  const {
-    query: { limit = 10, offset = 0 },
-  } = req;
-
-  try {
-    const foundOffers = await db.Offers.findAll(
-      { limit, offset },
-      { raw: true }
-    );
-
-    res.status(200).send(foundOffers);
-  } catch (err) {
-    next(new ServerError());
-  }
 };

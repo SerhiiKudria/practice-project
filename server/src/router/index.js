@@ -77,14 +77,6 @@ router.post(
 //   contestController.getContestById
 // );
 
-// GET /contests...
-router.post(
-  '/getAllContests',
-  checkToken.checkToken,
-  basicMiddlewares.onlyForCreative,
-  contestController.getContests
-);
-
 router.post(
   '/updateContest',
   checkToken.checkToken,
