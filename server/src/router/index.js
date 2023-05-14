@@ -17,6 +17,8 @@ const router = express.Router();
 
 // auth
 
+router.get('/offers', contestController.getAllOffers);
+
 router.post(
   '/registration',
   validators.validateRegistrationData,
